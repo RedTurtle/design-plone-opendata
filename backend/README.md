@@ -4,7 +4,8 @@ Plone DCAT IT
 
 ## Features
 
-TODO: List our awesome features
+* [ ] add a behavior with custom fields to Dataset
+* [ ] add a RDF view to collect all dataset in DCAT-AP_IT
 
 ## Installation
 

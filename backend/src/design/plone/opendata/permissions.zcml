@@ -4,6 +4,14 @@
     i18n_domain="design.plone.opendata"
     >
 
-  <!-- -*- extra stuff goes here -*- -->
+  <include
+        package="Products.CMFCore"
+        file="permissions.zcml"
+        />
+
+  <permission
+        id="design.plone.opendata.AddOpendataDataset"
+        title="design.plone.opendata: Add OpendataDataset"
+        />
 
 </configure>

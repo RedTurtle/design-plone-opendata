@@ -1,7 +1,11 @@
+import { OpendataDatasetView } from './components/views';
+
 const applyConfig = (config) => {
-  config.settings.isMultilingual = false;
-  config.settings.supportedLanguages = ['en'];
-  config.settings.defaultLanguage = 'en';
+
+  config.views.contentTypesViews = {
+    ...config.views.contentTypesViews,
+    'OpendataDataset': OpendataDatasetView, 
+  };
 
   return config;
 };

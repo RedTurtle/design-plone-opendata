@@ -53,8 +53,7 @@ setup(
         "Plone",
         "plone.api",
         "plone.restapi",
-        "plone.volto",
-        "plone.exportimport",
+        # "design.plone.contenttypes",
     ],
     extras_require={
         "test": [
