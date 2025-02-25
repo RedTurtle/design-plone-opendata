@@ -171,11 +171,11 @@ const PageView = ({ content, token, location, history }) => {
           <dl className="row">
           {content.release_date &&  <>
               <dt>{intl.formatMessage(messages.release_date)}</dt>
-              <dd>{new Date(content.release_date)}</dd>
+              <dd>{`${intl.formatDate(content.release_date)} ${intl.formatTime(content.release_date)}`}</dd>
             </>}
             {content.last_update_date &&  <>
               <dt>{intl.formatMessage(messages.last_update_date)}</dt>
-              <dd>{content.last_update_date}</dd>
+              <dd>{`${intl.formatDate(content.last_update_date)} ${intl.formatTime(content.last_update_date)}`}</dd>
             </>}
             {content.frequency && <>
               <dt>{intl.formatMessage(messages.frequency)}</dt>
