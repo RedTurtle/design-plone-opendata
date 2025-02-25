@@ -215,7 +215,7 @@ const PageView = ({ content, token, location, history }) => {
 
         <TextOrBlocks content={content} />
 
-        <pre>{JSON.stringify(content, null, 2)}</pre>
+          {/* <pre>{JSON.stringify(content, null, 2)}</pre> */}
 
         {content.show_modified && <PageMetadata content={content} />}
       </div>

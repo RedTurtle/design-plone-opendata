@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Plone\n"
-"POT-Creation-Date: 2024-03-22T12:43:34.158Z\n"
+"POT-Creation-Date: 2025-02-25T15:47:08.334Z\n"
 "Last-Translator: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
 "Language-Team: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -12,3 +12,28 @@ msgstr ""
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8\n"
 "Domain: volto\n"
+
+#. Default: "Allegato"
+#: components/views/OpendataDataset
+msgid "attachment"
+msgstr ""
+
+#. Default: "Frequenza di aggiornamento"
+#: components/views/OpendataDataset
+msgid "freqency"
+msgstr ""
+
+#. Default: "Data ultimo aggiornamento"
+#: components/views/OpendataDataset
+msgid "last_update_date"
+msgstr ""
+
+#. Default: "Data rilascio"
+#: components/views/OpendataDataset
+msgid "release_date"
+msgstr ""
+
+#. Default: "Temi"
+#: components/views/OpendataDataset
+msgid "themes"
+msgstr ""
