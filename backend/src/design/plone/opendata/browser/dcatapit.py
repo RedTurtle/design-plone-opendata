@@ -2,8 +2,9 @@ from datetime import datetime
 from plone import api
 from plone.namedfile.browser import Download
 from Products.Five import BrowserView
-from rdflib import BNode
+
 # from rdflib import ConjunctiveGraph
+from rdflib import BNode
 from rdflib import Graph
 from rdflib import Literal
 from rdflib import Namespace
@@ -11,9 +12,11 @@ from rdflib import URIRef
 from zope.interface import implementer
 from zope.interface import Interface
 from zope.publisher.interfaces import IPublishTraverse
-# from zope.publisher.interfaces import NotFound
 
 import io
+
+
+# from zope.publisher.interfaces import NotFound
 
 
 # Namespace RDF
