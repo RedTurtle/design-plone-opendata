@@ -5,7 +5,6 @@
     i18n_domain="design.plone.opendata"
     >
 
-  <!-- -*- extra stuff goes here -*- -->
-  <adapter>factory=".opendata.ControlPanel"
-    name="opendata-controlpanel" /&gt;
+  <adapter factory=".opendata.ControlPanel" name="opendata-controlpanel" />
+
 </adapter></configure>
