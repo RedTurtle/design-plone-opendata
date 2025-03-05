@@ -3,6 +3,6 @@
           i18n:domain="design.plone.opendata"
 >
 
-  <records      interface="design.plone.opendata.controlpanel.opendata.IControlPanel" />
+  <records interface="design.plone.opendata.controlpanel.opendata.IControlPanel" />
 
 </registry>

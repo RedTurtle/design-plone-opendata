@@ -6,8 +6,6 @@
     >
 
   <!-- -*- extra stuff goes here -*- -->
-  <adapter
-
-    factory=".opendata.ControlPanel"
-    name="opendata-controlpanel" />
-</configure>
+  <adapter>factory=".opendata.ControlPanel"
+    name="opendata-controlpanel" /&gt;
+</adapter></configure>
