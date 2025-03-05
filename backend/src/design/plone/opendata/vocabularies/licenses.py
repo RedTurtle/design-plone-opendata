@@ -1,6 +1,9 @@
-from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
-from zope.schema.interfaces import IVocabularyFactory
 from zope.interface import provider
+from zope.schema.interfaces import IVocabularyFactory
+from zope.schema.vocabulary import SimpleTerm
+from zope.schema.vocabulary import SimpleVocabulary
+
+
 # import csv
 
 # https://github.com/italia/daf-ontologie-vocabolari-controllati/blob/master/VocabolariControllati/licences/licences.csv
@@ -68,24 +71,24 @@ LICENSES_DICT = {
     # "C.1.1": "Licenza Sconosciuta",
 }
 
-    # <dct:license>
-    #   <dct:LicenseDocument rdf:about="https://www.dati.gov.it/content/italian-open-data-license-v20">
-    #     <owl:versionInfo>2.0</owl:versionInfo>
-    #     <foaf:name xml:lang="en">Italian Open Data License 2.0 (IODL 2.0)</foaf:name>
-    #     <foaf:name xml:lang="de">Italienische Open Data Lizenz 2.0 (IODL 2.0)</foaf:name>
-    #     <rdf:type rdf:resource="http://dati.gov.it/onto/dcatapit#LicenseDocument"/>
-    #     <dct:type rdf:resource="http://purl.org/adms/licencetype/Attribution"/>
-    #     <foaf:name xml:lang="it">Italian Open Data License 2.0 (IODL 2.0)</foaf:name>
-    #     <foaf:name xml:lang="fr">Italian Open Data License 2.0 (IODL 2.0)</foaf:name>
-    #   </dct:LicenseDocument>
-    # </dct:license>
+# <dct:license>
+#   <dct:LicenseDocument rdf:about="https://www.dati.gov.it/content/italian-open-data-license-v20">
+#     <owl:versionInfo>2.0</owl:versionInfo>
+#     <foaf:name xml:lang="en">Italian Open Data License 2.0 (IODL 2.0)</foaf:name>
+#     <foaf:name xml:lang="de">Italienische Open Data Lizenz 2.0 (IODL 2.0)</foaf:name>
+#     <rdf:type rdf:resource="http://dati.gov.it/onto/dcatapit#LicenseDocument"/>
+#     <dct:type rdf:resource="http://purl.org/adms/licencetype/Attribution"/>
+#     <foaf:name xml:lang="it">Italian Open Data License 2.0 (IODL 2.0)</foaf:name>
+#     <foaf:name xml:lang="fr">Italian Open Data License 2.0 (IODL 2.0)</foaf:name>
+#   </dct:LicenseDocument>
+# </dct:license>
+
 
 @provider(IVocabularyFactory)
 class LicensesVocabulary:
     def __call__(self, context):
 
         terms = [
-            SimpleTerm(value=key, title=label)
-            for (key, label) in LICENSES_DICT.items()
+            SimpleTerm(value=key, title=label) for (key, label) in LICENSES_DICT.items()
         ]
         return SimpleVocabulary(terms)

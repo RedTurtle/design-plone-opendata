@@ -54,6 +54,7 @@ setup(
         "plone.api",
         "plone.restapi",
         # "design.plone.contenttypes",
+        "rdflib",
     ],
     extras_require={
         "test": [

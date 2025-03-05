@@ -1,6 +1,8 @@
-from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
-from zope.schema.interfaces import IVocabularyFactory
 from zope.interface import provider
+from zope.schema.interfaces import IVocabularyFactory
+from zope.schema.vocabulary import SimpleTerm
+from zope.schema.vocabulary import SimpleVocabulary
+
 
 # Vocabolario TEMI
 # 1. Agricoltura, pesca, silvicoltura e prodotti alimentari
@@ -54,18 +56,57 @@ from zope.interface import provider
 class DataThemesVocabulary:
     def __call__(self, context):
         terms = [
-            SimpleTerm(value='http://publications.europa.eu/resource/authority/data-theme/AGRI', title='Agricoltura, pesca, silvicoltura e prodotti alimentari'),
-            SimpleTerm(value='http://publications.europa.eu/resource/authority/data-theme/ECON', title='Economia e Finanze'),
-            SimpleTerm(value='http://publications.europa.eu/resource/authority/data-theme/EDUC', title='Istruzione, cultura e sport'),
-            SimpleTerm(value='http://publications.europa.eu/resource/authority/data-theme/ENER', title='Energia'),
-            SimpleTerm(value='http://publications.europa.eu/resource/authority/data-theme/ENVI', title='Ambiente'),
-            SimpleTerm(value='http://publications.europa.eu/resource/authority/data-theme/GOVE', title='Governo e settore pubblico'),
-            SimpleTerm(value='http://publications.europa.eu/resource/authority/data-theme/HEAL', title='Salute'),
-            SimpleTerm(value='http://publications.europa.eu/resource/authority/data-theme/INTR', title='Tematiche internazionali'),
-            SimpleTerm(value='http://publications.europa.eu/resource/authority/data-theme/JUST', title='Giustizia, sistema giuridico e sicurezza pubblica'),
-            SimpleTerm(value='http://publications.europa.eu/resource/authority/data-theme/REGI', title='Regioni e città'),
-            SimpleTerm(value='http://publications.europa.eu/resource/authority/data-theme/SOCI', title='Popolazione e società'),
-            SimpleTerm(value='http://publications.europa.eu/resource/authority/data-theme/TECH', title='Scienza e tecnologia'),
-            SimpleTerm(value='http://publications.europa.eu/resource/authority/data-theme/TRAN', title='Trasporti'),
+            SimpleTerm(
+                value="http://publications.europa.eu/resource/authority/data-theme/AGRI",
+                title="Agricoltura, pesca, silvicoltura e prodotti alimentari",
+            ),
+            SimpleTerm(
+                value="http://publications.europa.eu/resource/authority/data-theme/ECON",
+                title="Economia e Finanze",
+            ),
+            SimpleTerm(
+                value="http://publications.europa.eu/resource/authority/data-theme/EDUC",
+                title="Istruzione, cultura e sport",
+            ),
+            SimpleTerm(
+                value="http://publications.europa.eu/resource/authority/data-theme/ENER",
+                title="Energia",
+            ),
+            SimpleTerm(
+                value="http://publications.europa.eu/resource/authority/data-theme/ENVI",
+                title="Ambiente",
+            ),
+            SimpleTerm(
+                value="http://publications.europa.eu/resource/authority/data-theme/GOVE",
+                title="Governo e settore pubblico",
+            ),
+            SimpleTerm(
+                value="http://publications.europa.eu/resource/authority/data-theme/HEAL",
+                title="Salute",
+            ),
+            SimpleTerm(
+                value="http://publications.europa.eu/resource/authority/data-theme/INTR",
+                title="Tematiche internazionali",
+            ),
+            SimpleTerm(
+                value="http://publications.europa.eu/resource/authority/data-theme/JUST",
+                title="Giustizia, sistema giuridico e sicurezza pubblica",
+            ),
+            SimpleTerm(
+                value="http://publications.europa.eu/resource/authority/data-theme/REGI",
+                title="Regioni e città",
+            ),
+            SimpleTerm(
+                value="http://publications.europa.eu/resource/authority/data-theme/SOCI",
+                title="Popolazione e società",
+            ),
+            SimpleTerm(
+                value="http://publications.europa.eu/resource/authority/data-theme/TECH",
+                title="Scienza e tecnologia",
+            ),
+            SimpleTerm(
+                value="http://publications.europa.eu/resource/authority/data-theme/TRAN",
+                title="Trasporti",
+            ),
         ]
         return SimpleVocabulary(terms)
