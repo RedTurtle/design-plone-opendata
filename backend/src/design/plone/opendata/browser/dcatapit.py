@@ -113,7 +113,8 @@ class RDFDownload(Download):
 
         # Creazione nodo Organization
         org_node = BNode()  # Nodo anonimo
-        g.add((org_node, RDF.type, VCARD.Organization))
+        # g.add((org_node, RDF.type, VCARD.Organization))
+        g.add((org_node, RDF.type, DCATAPIT.Organization))
 
         org_email = api.portal.get_registry_record(
             interface=IControlPanel, name="org_email", default=None
@@ -366,7 +367,7 @@ class RDFDownload(Download):
                         (license_node, DCATAPIT.LicenseDocument, license_document_uri)
                     )
 
-                # XXX: per sempliciità usiamo il rghtsHolder del dataset
+                # XXX: per semplicità usiamo il rghtsHolder del dataset
                 g.add((distribution_uri, DCAT.contactPoint, holder_uri))
 
             # for keyword in record['Keywords'].split(","):
