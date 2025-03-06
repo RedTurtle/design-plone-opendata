@@ -71,6 +71,5 @@ setup(
     [z3c.autoinclude.plugin]
     target = plone
     [console_scripts]
-    update_locale = design.plone.opendata.locales.update:update_locale
     """,
 )

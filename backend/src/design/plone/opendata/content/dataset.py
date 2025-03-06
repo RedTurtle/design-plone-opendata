@@ -36,10 +36,15 @@ class IOpendataDataset(model.Schema):
             "(specificato mediante un URI - Uniform Resource Identifier)"
         ),
         value_type=schema.Choice(
-            title=_("temi"), vocabulary="design.plone.opendata.themes"
+            title=_("Temi"), vocabulary="design.plone.opendata.themes"
         ),
     )
     # Dataset sottotema R
+    # La sottocategoria in cui può essere classificato il Dataset.
+    # La proprietà lega l’oggetto (dominio)
+    # Dataset a uno o più oggetti (codominio) di tipo skos:Concept (specificato mediante un URI - Uniform Resource Identifier)
+    # dct.subject
+
     # Non implementato
 
     # Dataset titolare M

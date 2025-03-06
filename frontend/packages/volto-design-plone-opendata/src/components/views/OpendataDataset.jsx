@@ -59,7 +59,7 @@ const types = {
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'Excel XLSX',
   'application/vnd.oasis.opendocument.text': 'ODT',
   'text/csv': 'CSV',
-}
+};
 
 /**
  * PageView view component class.

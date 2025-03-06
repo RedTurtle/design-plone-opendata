@@ -1,22 +1,22 @@
 from datetime import datetime
+from design.plone.opendata import logger
+from design.plone.opendata.controlpanel.opendata import IControlPanel
 from plone import api
 from plone.namedfile.browser import Download
 from Products.Five import BrowserView
-
-# from rdflib import ConjunctiveGraph
 from rdflib import BNode
 from rdflib import Graph
 from rdflib import Literal
 from rdflib import Namespace
 from rdflib import URIRef
+from zope.component import getUtility
 from zope.interface import implementer
 from zope.interface import Interface
 from zope.publisher.interfaces import IPublishTraverse
+from zope.publisher.interfaces import NotFound
+from zope.schema.interfaces import IVocabularyFactory
 
 import io
-
-
-# from zope.publisher.interfaces import NotFound
 
 
 # Namespace RDF
@@ -69,12 +69,26 @@ def format_from_mime_type(mime_type):
 @implementer(IPublishTraverse)
 class RDFDownload(Download):
     # def __init__(self, context, request):
+    format = None
+    mime_type = None
+
+    def publishTraverse(self, request, name):
+        super().publishTraverse(request=request, name=name)
+        if name == "rdf.xml":
+            self.format = "pretty-xml"
+            self.mime_type = "application/rdf+xml"
+        else:
+            logger.errror("RDF format %s not implemented", name)
+            raise NotFound(self, name, self.request)
+        return self
 
     # def _getFile(self):
     def __call__(self):
         portal = api.portal.get()
         lang = portal.Language()
-
+        theme_vocabulary = getUtility(
+            IVocabularyFactory, "design.plone.opendata.themes"
+        )(portal)
         g = Graph()
         # g = ConjunctiveGraph()
         g.bind("foaf", FOAF)
@@ -101,60 +115,113 @@ class RDFDownload(Download):
         org_node = BNode()  # Nodo anonimo
         g.add((org_node, RDF.type, VCARD.Organization))
 
-        # TODO: mettere nel controlpanel degli opendata
-        g.add((org_node, VCARD.hasEmail, URIRef("mailto:test@example.org")))
-        g.add((org_node, VCARD.fn, Literal(f"Redazione OpenData {portal.Title()}")))
-
-        catalog_uri = URIRef(portal.absolute_url())
-        g.add((catalog_uri, RDF.type, DCATAPIT.Catalog))
-
-        # TODO: mettere nel controlpanel degli opendata
-        g.add(
-            (catalog_uri, DCT.title, Literal(f"Opendata {portal.Title()}", lang=lang))
+        org_email = api.portal.get_registry_record(
+            interface=IControlPanel, name="org_email", default=None
         )
-        g.add(
-            (
-                catalog_uri,
-                DCT.description,
-                Literal(f"Opendata {portal.Title()}", lang=lang),
+        if org_email:
+            g.add((org_node, VCARD.hasEmail, URIRef(org_email)))
+        org_title = api.portal.get_registry_record(
+            interface=IControlPanel, name="org_title", default=None
+        )
+        if org_title:
+            g.add((org_node, VCARD.fn, Literal(org_title)))
+
+        catalog_node = BNode()
+        g.add((catalog_node, RDF.type, DCATAPIT.Catalog))
+
+        catalog_title = api.portal.get_registry_record(
+            interface=IControlPanel, name="catalog_title", default=None
+        )
+        if catalog_title:
+            g.add((catalog_node, DCT.title, Literal(catalog_title)))
+        catalog_description = api.portal.get_registry_record(
+            interface=IControlPanel, name="catalog_description", default=None
+        )
+        if catalog_description:
+            catalog_description = catalog_description.replace("\n", " ")
+            g.add((catalog_node, DCT.description, Literal(catalog_description)))
+        catalog_homepage = api.portal.get_registry_record(
+            interface=IControlPanel, name="catalog_homepage", default=None
+        )
+        if catalog_homepage:
+            g.add((catalog_node, FOAF.homepage, Literal(catalog_homepage)))
+        if lang == "it":
+            g.add(
+                (
+                    catalog_node,
+                    DCT.language,
+                    URIRef(
+                        "http://publications.europa.eu/resource/authority/language/ITA"
+                    ),
+                )
             )
+        elif lang == "en":
+            g.add(
+                (
+                    catalog_node,
+                    DCT.language,
+                    URIRef(
+                        "http://publications.europa.eu/resource/authority/language/ENG"
+                    ),
+                )
+            )
+        catalog_issued = api.portal.get_registry_record(
+            interface=IControlPanel, name="catalog_issued", default=None
         )
+        if catalog_issued:
+            g.add(
+                (
+                    catalog_node,
+                    DCT.issued,
+                    Literal(catalog_issued.isoformat(), datatype=XSD.date),
+                )
+            )
 
-        # modified del catalogo andrebbe calcolato alla modifica dei metadati nel controlpanel, dell'oggetto o dei dataset ?
-        # temporaneamente mettiamo now()
+        theme_taxonomy_uri = URIRef(
+            "http://publications.europa.eu/resource/authority/data-theme"
+        )
+        g.add((catalog_node, DCAT.themeTaxonomy, theme_taxonomy_uri))
+        g.add((theme_taxonomy_uri, RDF.type, SKOS.ConceptScheme))
+        g.add((theme_taxonomy_uri, DCT.title, Literal("Vocabulary Theme")))
+
+        # TODO: modified del catalogo andrebbe calcolato alla modifica dei metadati nel controlpanel, dell'oggetto o dei dataset ?
+        #       temporaneamente mettiamo now()
         g.add(
             (
-                catalog_uri,
+                catalog_node,
                 DCT.modified,
                 Literal(datetime.now().isoformat(), datatype=XSD.dateTime),
             )
         )
 
-        # TODO: mettere nel controlpanel degli opendata
-        publisher_uri = URIRef(f"{portal.absolute_url()}#opendata")
-        g.add((catalog_uri, DCT.publisher, publisher_uri))
-        g.add((publisher_uri, RDF.type, DCATAPIT.Agent))
+        publisher_node = BNode()
+        g.add((catalog_node, DCT.publisher, publisher_node))
+        g.add((publisher_node, RDF.type, DCATAPIT.Agent))
         g.add(
             (
-                publisher_uri,
-                FOAF.name,
-                Literal(f"Redazione OpendData {portal.Title()}", lang=lang),
-            )
-        )
-        g.add(
-            (
-                publisher_uri,
+                publisher_node,
                 DCT.identifier,
-                Literal(f"{portal.absolute_url()}#opendata"),
+                Literal(f"{portal.absolute_url()}#publisher"),
             )
         )
+        publisher_title = api.portal.get_registry_record(
+            interface=IControlPanel, name="publisher_title", default=None
+        )
+        if publisher_title:
+            g.add(
+                (
+                    publisher_node,
+                    FOAF.name,
+                    Literal(publisher_title),
+                )
+            )
 
         for brain in brains:
             obj = brain.getObject()
             lang = obj.Language()
             # dataset_uri = URIRef(f"{catalog_uri}/dataset/{record['ID']}")
             dataset_uri = URIRef(obj.absolute_url())
-            g.add((catalog_uri, DCAT.dataset, dataset_uri))
+            g.add((catalog_node, DCAT.dataset, dataset_uri))
             g.add((dataset_uri, RDF.type, DCATAPIT.Dataset))
             g.add((dataset_uri, DCT.identifier, Literal(brain.getURL())))
 
@@ -174,17 +241,31 @@ class RDFDownload(Download):
             # g.add((dataset_uri, DCT.issued, Literal(record['PubDate'], datatype=XSD.dateTime)))
             g.add((dataset_uri, DCT.description, Literal(obj.Description(), lang=lang)))
             for theme in obj.themes:
-                g.add((dataset_uri, DCAT.theme, URIRef(theme)))
-
+                theme_uri = URIRef(theme)
+                g.add((dataset_uri, DCAT.theme, theme_uri))
+                # TODO: potrebbero anche essere aggiunti tutti all'inizio
+                # g.add((catalog_node, SKOS.Concept, theme_uri))
+                g.add((theme_uri, RDF.type, SKOS.Concept))
+                term = theme_vocabulary.getTerm(theme)
+                # TODO: valutare le traduzioni
+                g.add((theme_uri, SKOS.prefLabel, Literal(term.title, lang=lang)))
             if obj.rightsHolder:
-                holder = obj.rightsHolder[0].to_object
-                if holder:
+                holder_obj = obj.rightsHolder[0].to_object
+                if holder_obj:
                     # agent_node = BNode()
-                    holder_uri = URIRef(holder.absolute_url())
+                    holder_uri = URIRef(holder_obj.absolute_url())
                     g.add((dataset_uri, DCT.rightsHolder, holder_uri))
                     g.add((holder_uri, RDF.type, DCATAPIT.Agent))
-                    g.add((holder_uri, FOAF.name, Literal(holder.Title(), lang=lang)))
-                    g.add((holder_uri, DCT.identifier, Literal(holder.absolute_url())))
+                    g.add(
+                        (holder_uri, FOAF.name, Literal(holder_obj.Title(), lang=lang))
+                    )
+                    g.add(
+                        (holder_uri, DCT.identifier, Literal(holder_obj.absolute_url()))
+                    )
+
+            # XXX: in questi casi prendiamo dati generali, valutare se metterli anche specifici
+            g.add((dataset_uri, DCAT.contactPoint, org_node))
+            g.add((dataset_uri, DCT.publisher, publisher_node))
 
             # location_node = BNode()
             # g.add((dataset_uri, DCT.spatial, location_node))
@@ -202,11 +283,12 @@ class RDFDownload(Download):
                 g.add((dataset_uri, DCAT.distribution, distribution_uri))
                 g.add((distribution_uri, RDF.type, DCATAPIT.Distribution))
                 g.add((distribution_uri, DCT.identifier, Literal(file_brain.getURL())))
-                # TODO: qui andrebbe messo il filename, anzichè "file", serve la getObject per recuperarlo ?
+                g.add((distribution_uri, DCT.description, Literal(file_brain.Title)))
                 g.add(
                     (
                         distribution_uri,
                         DCAT.accessURL,
+                        # TODO: qui andrebbe messo il filename, anzichè "file", serve la getObject per recuperarlo ?
                         URIRef(f"{file_brain.getURL()}/@@download/file"),
                     )
                 )
@@ -218,7 +300,74 @@ class RDFDownload(Download):
                     )
                 )
                 # XXX: per semplicità la licenza è definita nel dataset e non nei singoli file
-                g.add((distribution_uri, DCT.license, Literal(obj.license)))
+                # TODO: le licenze potrebbero essere definite una volta sola, poi referenziate qui
+                if obj.license == "https://creativecommons.org/licenses/by/4.0/":
+                    license_document_uri = URIRef(obj.license)
+                    g.add(
+                        (
+                            license_document_uri,
+                            RDF.type,
+                            URIRef("http://dati.gov.it/onto/dcatapit#LicenseDocument"),
+                        )
+                    )
+                    g.add(
+                        (
+                            license_document_uri,
+                            DCT.type,
+                            URIRef("http://purl.org/adms/licencetype/Attribution"),
+                        )
+                    )
+                    g.add(
+                        (
+                            license_document_uri,
+                            FOAF.name,
+                            Literal(
+                                "Creative Commons Attribuzione 4.0 Internazionale (CC BY 4.0)",
+                                lang="it",
+                            ),
+                        )
+                    )
+                    g.add((license_document_uri, OWL.versionInfo, Literal("4.0")))
+                elif (
+                    obj.license
+                    == "https://www.dati.gov.it/content/italian-open-data-license-v20"
+                ):
+                    license_document_uri = URIRef(obj.license)
+                    g.add(
+                        (
+                            license_document_uri,
+                            RDF.type,
+                            URIRef("http://purl.org/dc/terms/LicenseDocument"),
+                        )
+                    )
+                    g.add(
+                        (
+                            license_document_uri,
+                            DCT.type,
+                            URIRef("http://purl.org/adms/licencetype/Attribution"),
+                        )
+                    )
+                    g.add(
+                        (
+                            license_document_uri,
+                            FOAF.name,
+                            Literal(
+                                "Italian Open  Data License 2.0 (IODL 2.0)", lang="it"
+                            ),
+                        )
+                    )
+                    g.add((license_document_uri, OWL.versionInfo, Literal("4.0")))
+                else:
+                    license_document_uri = None
+                if license_document_uri:
+                    license_node = license_document_uri
+                    g.add((distribution_uri, DCT.license, license_node))
+                    g.add(
+                        (license_node, DCATAPIT.LicenseDocument, license_document_uri)
+                    )
+
+                # XXX: per sempliciità usiamo il rghtsHolder del dataset
+                g.add((distribution_uri, DCAT.contactPoint, holder_uri))
 
             # for keyword in record['Keywords'].split(","):
             #     g.add((dataset_uri, DCAT.keyword, Literal(keyword.strip())))
@@ -230,10 +379,10 @@ class RDFDownload(Download):
 
         # Salva l'RDF in un file
         out = io.BytesIO()
-        g.serialize(destination=out, format="pretty-xml")
+        g.serialize(destination=out, format=self.format)
         data = out.getvalue()
         self.request.response.setHeader("Content-Length", len(data))
-        self.request.RESPONSE.setHeader("Content-Type", "application/rdf+xml")
+        self.request.RESPONSE.setHeader("Content-Type", self.mime_type)
         # self.request.response.setHeader(
         #         "Content-Disposition",
         #         "attachment; filename=users.xlsx",

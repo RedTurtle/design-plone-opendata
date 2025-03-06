@@ -10,7 +10,7 @@
              category="Products"
              condition_expr=""
              icon_expr=""
-             title="OpenData Control Panel"
+             title="Opendata"
              url_expr="string:${portal_url}/@@opendata-controlpanel"
              visible="True"
              i18n:attributes="title"
