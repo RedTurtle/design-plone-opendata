@@ -49,7 +49,7 @@ class IControlPanel(Interface):
 @adapter(Interface, Interface)
 class ControlPanelConfigletPanel(RegistryConfigletPanel):
     schema = IControlPanel
-    schema_prefix = "opendata"
+    schema_prefix = None
     configlet_id = "opendata-controlpanel"
     configlet_category_id = "Products"
     title = "Opendata"
