@@ -19,13 +19,13 @@ class IOpendataDataset(model.Schema):
     # Dataset descrizione M  --> plone.basic (TODO: deve essere obbligatorio? Oppure lo pubblichiamo ripetendo
     #                                               il titolo, se non compilato, nell'RDF)
 
-    # Dataset data di rilascio O
-    release_date = schema.Datetime(title=_("Data di rilascio"), required=False)
+    # Dataset data di rilascio
+    # Volto fa casino con la timezone, metto per ora una data anzichè un dattetime
+    release_date = schema.Date(title=_("Data di rilascio"), required=False)
 
     # Dataset data ultima modifica M  --> dato redazionale !!!
-    last_update_date = schema.Datetime(
-        title=_("Data di ultima modifica"), required=True
-    )
+    # Volto fa casino con la timezone, metto per ora una data anzichè un dattetime
+    last_update_date = schema.Date(title=_("Data di ultima modifica"), required=True)
 
     # Dataset temi M
     themes = schema.Set(

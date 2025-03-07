@@ -225,21 +225,23 @@ class RDFDownload(Download):
             g.add((catalog_node, DCAT.dataset, dataset_uri))
             g.add((dataset_uri, RDF.type, DCATAPIT.Dataset))
             g.add((dataset_uri, DCT.identifier, Literal(brain.getURL())))
-
-            # XXX: verificare il formato iso delle date usato da CKAN
             g.add(
                 (
                     dataset_uri,
                     DCT.modified,
-                    Literal(
-                        brain.modified.asdatetime().isoformat(), datatype=XSD.dateTime
-                    ),
+                    Literal(obj.last_update_date.isoformat(), datatype=XSD.date),
+                )
+            )
+            g.add(
+                (
+                    dataset_uri,
+                    DCT.issued,
+                    Literal(obj.release_date.isoformat(), datatype=XSD.date),
                 )
             )
             g.add((dataset_uri, DCT.accrualPeriodicity, Literal(obj.frequency)))
 
             g.add((dataset_uri, DCT.title, Literal(obj.Title(), lang=lang)))
-            # g.add((dataset_uri, DCT.issued, Literal(record['PubDate'], datatype=XSD.dateTime)))
             g.add((dataset_uri, DCT.description, Literal(obj.Description(), lang=lang)))
             for theme in obj.themes:
                 theme_uri = URIRef(theme)
@@ -268,16 +270,6 @@ class RDFDownload(Download):
             g.add((dataset_uri, DCAT.contactPoint, org_node))
             g.add((dataset_uri, DCT.publisher, publisher_node))
 
-            # location_node = BNode()
-            # g.add((dataset_uri, DCT.spatial, location_node))
-            # g.add((location_node, RDF.type, DCT.Location))
-            # g.add((location_node, DCATAPIT.geographicalIdentifier, URIRef("https://www.geonames.org/6538969")))
-
-            # g.add((dataset_uri, DCT.accrualPeriodicity, URIRef("http://publications.europa.eu/resource/authority/frequency/CONT")))
-            # g.add((dataset_uri, DCT.language, URIRef("http://publications.europa.eu/resource/authority/language/ITA")))
-            # g.add((dataset_uri, DCT.modified, Literal(record['ModifiedDate'], datatype=XSD.dateTime)))
-            # g.add((dataset_uri, DCAT.landingPage, URIRef(f"{catalog_uri}/dataset/{record['ID']}")))
-
             for file_brain in catalog(path=brain.getPath(), portal_type="File"):
                 distribution_uri = URIRef(file_brain.getURL())
 
@@ -289,7 +281,8 @@ class RDFDownload(Download):
                     (
                         distribution_uri,
                         DCAT.accessURL,
-                        # TODO: qui andrebbe messo il filename, anzichè "file", serve la getObject per recuperarlo ?
+                        # TODO: qui andrebbe messo il filename, anzichè "file",
+                        # serve la getObject per recuperarlo ?
                         URIRef(f"{file_brain.getURL()}/@@download/file"),
                     )
                 )
@@ -370,15 +363,6 @@ class RDFDownload(Download):
                 # XXX: per semplicità usiamo il rghtsHolder del dataset
                 g.add((distribution_uri, DCAT.contactPoint, holder_uri))
 
-            # for keyword in record['Keywords'].split(","):
-            #     g.add((dataset_uri, DCAT.keyword, Literal(keyword.strip())))
-
-        #     dataset_uri = URIRef(obj.absolute_url())
-        #     g.add((dataset_uri, DCT.title, Literal(obj.Title())))
-        #     g.add((dataset_uri, DCT.issued, Literal(record['PubDate'])))
-        #     g.add((dataset_uri, DCAT.theme, Literal(record['Theme'])))
-
-        # Salva l'RDF in un file
         out = io.BytesIO()
         g.serialize(destination=out, format=self.format)
         data = out.getvalue()
