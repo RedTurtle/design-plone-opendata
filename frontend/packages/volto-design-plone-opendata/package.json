@@ -27,11 +27,11 @@
     "release-alpha": "release-it --preRelease=alpha"
   },
   "dependencies": {
-    "design-react-kit": "*"
   },
   "peerDependencies": {
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "design-comuni-plone-theme": "^11"
   },
   "devDependencies": {
     "@plone/scripts": "^3.6.1",

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Plone\n"
-"POT-Creation-Date: 2025-02-25T15:47:08.334Z\n"
+"POT-Creation-Date: 2025-03-07T07:54:27.005Z\n"
 "Last-Translator: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
 "Language-Team: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -16,6 +16,21 @@ msgstr ""
 #. Default: "Allegato"
 #: components/views/OpendataDataset
 msgid "attachment"
+msgstr ""
+
+#. Default: "Data e risorse"
+#: components/views/OpendataDataset
+msgid "dataset_distributions"
+msgstr ""
+
+#. Default: "Titolare"
+#: components/views/OpendataDataset
+msgid "dataset_holder"
+msgstr ""
+
+#. Default: "Metadati del Dataset"
+#: components/views/OpendataDataset
+msgid "dataset_metadata"
 msgstr ""
 
 #. Default: "Frequenza di aggiornamento"

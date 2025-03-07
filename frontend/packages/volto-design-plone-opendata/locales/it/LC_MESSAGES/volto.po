@@ -16,6 +16,21 @@ msgstr ""
 msgid "attachment"
 msgstr ""
 
+#. Default: "Data e risorse"
+#: components/views/OpendataDataset
+msgid "dataset_distributions"
+msgstr ""
+
+#. Default: "Titolare"
+#: components/views/OpendataDataset
+msgid "dataset_holder"
+msgstr ""
+
+#. Default: "Metadati del Dataset"
+#: components/views/OpendataDataset
+msgid "dataset_metadata"
+msgstr ""
+
 #. Default: "Frequenza di aggiornamento"
 #: components/views/OpendataDataset
 msgid "freqency"
