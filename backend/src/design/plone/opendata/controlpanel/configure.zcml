@@ -5,7 +5,10 @@
     i18n_domain="design.plone.opendata"
     >
 
-  <adapter factory=".opendata.ControlPanelConfigletPanel" name="opendata-controlpanel" />
+  <adapter
+      factory=".opendata.ControlPanelConfigletPanel"
+      name="opendata-controlpanel"
+      />
 
   <browser:page
       name="opendata-controlpanel"
