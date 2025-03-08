@@ -80,6 +80,10 @@ class RDFDownload(Download):
     mime_type = None
     _v_memoize_licenses = {}
     _v_memoize_themes = {}
+    _v_memoize_languages = {
+        "it": URIRef("http://publications.europa.eu/resource/authority/language/ITA"),
+        "en": URIRef("http://publications.europa.eu/resource/authority/language/ENG"),
+    }
 
     def publishTraverse(self, request, name):
         super().publishTraverse(request=request, name=name)
@@ -162,26 +166,8 @@ class RDFDownload(Download):
         )
         if catalog_homepage:
             g.add((catalog_node, FOAF.homepage, Literal(catalog_homepage)))
-        if lang == "it":
-            g.add(
-                (
-                    catalog_node,
-                    DCT.language,
-                    URIRef(
-                        "http://publications.europa.eu/resource/authority/language/ITA"
-                    ),
-                )
-            )
-        elif lang == "en":
-            g.add(
-                (
-                    catalog_node,
-                    DCT.language,
-                    URIRef(
-                        "http://publications.europa.eu/resource/authority/language/ENG"
-                    ),
-                )
-            )
+        if lang in self._v_memoize_languages:
+            g.add((catalog_node, DCT.language, self._v_memoize_languages[lang]))
         catalog_issued = api.portal.get_registry_record(
             interface=IControlPanel, name="catalog_issued", default=None
         )
@@ -310,7 +296,7 @@ class RDFDownload(Download):
                 if license_node:
                     g.add((distribution_uri, DCT.license, license_node))
 
-                # XXX: per semplicità usiamo il rghtsHolder del dataset
+                # XXX: per semplicità usiamo il rightsHolder del dataset
                 g.add((distribution_uri, DCAT.contactPoint, holder_uri))
 
         out = io.BytesIO()
