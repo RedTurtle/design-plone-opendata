@@ -2,4 +2,5 @@
 # http://publications.europa.eu/resource/authority/file-type/CSV"
 # filetypes-filtered.rdf
 
-# TODO: serve però associare i mimetypes ai filetype, o alttrimenti aggiungere filetype come campo da compilare redazionalmente
+# TODO: serve però associare i mimetypes ai filetype, o alttrimenti aggiungere filetype
+#       come campo da compilare redazionalmente

@@ -53,5 +53,5 @@ def vocabulary_terms(lang):
 class LicensesVocabulary:
     def __call__(self, context):
         lang = context.Language() or "it"
-        terms = [SimpleTerm(value, title) for (value, title) in vocabulary_terms(lang)]
+        terms = [SimpleTerm(value=value, title=title) for (value, title) in vocabulary_terms(lang)]
         return SimpleVocabulary(terms)
