@@ -2,7 +2,12 @@ from datetime import datetime
 from design.plone.opendata import logger
 from design.plone.opendata.controlpanel.opendata import IControlPanel
 from design.plone.opendata.vocabularies.licenses import get_license_ref
-from design.plone.opendata.vocabularies.licenses import get_triples
+from design.plone.opendata.vocabularies.licenses import (
+    get_triples as get_license_triples,
+)
+
+# from zope.schema.interfaces import IVocabularyFactory
+from design.plone.opendata.vocabularies.themes import get_triples as get_theme_triples
 from plone import api
 from plone.namedfile.browser import Download
 from Products.Five import BrowserView
@@ -11,12 +16,12 @@ from rdflib import Graph
 from rdflib import Literal
 from rdflib import Namespace
 from rdflib import URIRef
-from zope.component import getUtility
+
+# from zope.component import getUtility
 from zope.interface import implementer
 from zope.interface import Interface
 from zope.publisher.interfaces import IPublishTraverse
 from zope.publisher.interfaces import NotFound
-from zope.schema.interfaces import IVocabularyFactory
 
 import io
 
@@ -55,7 +60,7 @@ class RDFView(BrowserView):
 
 # https://github.com/ckan/ckanext-dcat/blob/master/ckanext/dcat/processors.py
 
-# TODO: spostare sul controlpanel ?
+# TODO: spostare sul controlpanel ? filetypes vocabulary ?
 FORMAT = {
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "Excel XLSX",
     "application/vnd.oasis.opendocument.text": "ODT",
@@ -74,6 +79,7 @@ class RDFDownload(Download):
     format = None
     mime_type = None
     _v_memoize_licenses = {}
+    _v_memoize_themes = {}
 
     def publishTraverse(self, request, name):
         super().publishTraverse(request=request, name=name)
@@ -85,12 +91,21 @@ class RDFDownload(Download):
             raise NotFound(self, name, self.request)
         return self
 
+    def get_theme(self, g, theme):
+        if theme in self._v_memoize_themes:
+            return self._v_memoize_licenses[theme]
+        ref = URIRef(theme)
+        for node in get_theme_triples(ref):
+            g.add(node)
+        self._v_memoize_themes[theme] = ref
+        return ref
+
     def get_license(self, g, license):
         if license in self._v_memoize_licenses:
             return self._v_memoize_licenses[license]
         ref = get_license_ref(name=license)
         if ref:
-            for node in get_triples(ref):
+            for node in get_license_triples(ref):
                 g.add(node)
         self._v_memoize_licenses[license] = ref
         return ref
@@ -99,11 +114,7 @@ class RDFDownload(Download):
     def __call__(self):
         portal = api.portal.get()
         lang = portal.Language()
-        theme_vocabulary = getUtility(
-            IVocabularyFactory, "design.plone.opendata.themes"
-        )(portal)
         g = Graph()
-        # g = ConjunctiveGraph()
         g.bind("foaf", FOAF)
         g.bind("owl", OWL)
         g.bind("skos", SKOS)
@@ -115,18 +126,10 @@ class RDFDownload(Download):
         g.bind("dcatapit", DCATAPIT)
         g.bind("vcard", VCARD)
         g.bind("xsd", XSD)
-        # records = sheet.get_all_records()
         catalog = api.portal.get_tool("portal_catalog")
         brains = catalog(portal_type="OpendataDataset")
 
-        # <vcard:Organization rdf:nodeID="Nefb041d7de8243f9a2d8cf8e9c5eadd8">
-        #     <vcard:hasEmail rdf:resource="mailto:redazioneopendatacopertino@gmail.com"/>
-        #     <vcard:fn>Redazione OD</vcard:fn>
-        # </vcard:Organization>
-
-        # Creazione nodo Organization
         org_node = BNode()  # Nodo anonimo
-        # g.add((org_node, RDF.type, VCARD.Organization))
         g.add((org_node, RDF.type, DCATAPIT.Organization))
 
         org_email = api.portal.get_registry_record(
@@ -257,14 +260,9 @@ class RDFDownload(Download):
             g.add((dataset_uri, DCT.title, Literal(obj.Title(), lang=lang)))
             g.add((dataset_uri, DCT.description, Literal(obj.Description(), lang=lang)))
             for theme in obj.themes:
-                theme_uri = URIRef(theme)
-                g.add((dataset_uri, DCAT.theme, theme_uri))
-                # TODO: potrebbero anche essere aggiunti tutti all'inizio
-                # g.add((catalog_node, SKOS.Concept, theme_uri))
-                g.add((theme_uri, RDF.type, SKOS.Concept))
-                term = theme_vocabulary.getTerm(theme)
-                # TODO: valutare le traduzioni
-                g.add((theme_uri, SKOS.prefLabel, Literal(term.title, lang=lang)))
+                theme_node = self.get_theme(g, theme)
+                if theme_node:
+                    g.add((dataset_uri, DCAT.theme, theme_node))
             if obj.rightsHolder:
                 holder_obj = obj.rightsHolder[0].to_object
                 if holder_obj:
@@ -320,8 +318,4 @@ class RDFDownload(Download):
         data = out.getvalue()
         self.request.response.setHeader("Content-Length", len(data))
         self.request.RESPONSE.setHeader("Content-Type", self.mime_type)
-        # self.request.response.setHeader(
-        #         "Content-Disposition",
-        #         "attachment; filename=users.xlsx",
-        # )
         return data
