@@ -1,6 +1,8 @@
 from datetime import datetime
 from design.plone.opendata import logger
 from design.plone.opendata.controlpanel.opendata import IControlPanel
+from design.plone.opendata.vocabularies.licenses import get_license_ref
+from design.plone.opendata.vocabularies.licenses import get_triples
 from plone import api
 from plone.namedfile.browser import Download
 from Products.Five import BrowserView
@@ -71,6 +73,7 @@ class RDFDownload(Download):
     # def __init__(self, context, request):
     format = None
     mime_type = None
+    _v_memoize_licenses = {}
 
     def publishTraverse(self, request, name):
         super().publishTraverse(request=request, name=name)
@@ -81,6 +84,16 @@ class RDFDownload(Download):
             logger.errror("RDF format %s not implemented", name)
             raise NotFound(self, name, self.request)
         return self
+
+    def get_license(self, g, license):
+        if license in self._v_memoize_licenses:
+            return self._v_memoize_licenses[license]
+        ref = get_license_ref(name=license)
+        if ref:
+            for node in get_triples(ref):
+                g.add(node)
+        self._v_memoize_licenses[license] = ref
+        return ref
 
     # def _getFile(self):
     def __call__(self):
@@ -295,70 +308,9 @@ class RDFDownload(Download):
                 )
                 # XXX: per semplicità la licenza è definita nel dataset e non nei singoli file
                 # TODO: le licenze potrebbero essere definite una volta sola, poi referenziate qui
-                if obj.license == "https://creativecommons.org/licenses/by/4.0/":
-                    license_document_uri = URIRef(obj.license)
-                    g.add(
-                        (
-                            license_document_uri,
-                            RDF.type,
-                            URIRef("http://dati.gov.it/onto/dcatapit#LicenseDocument"),
-                        )
-                    )
-                    g.add(
-                        (
-                            license_document_uri,
-                            DCT.type,
-                            URIRef("http://purl.org/adms/licencetype/Attribution"),
-                        )
-                    )
-                    g.add(
-                        (
-                            license_document_uri,
-                            FOAF.name,
-                            Literal(
-                                "Creative Commons Attribuzione 4.0 Internazionale (CC BY 4.0)",
-                                lang="it",
-                            ),
-                        )
-                    )
-                    g.add((license_document_uri, OWL.versionInfo, Literal("4.0")))
-                elif (
-                    obj.license
-                    == "https://www.dati.gov.it/content/italian-open-data-license-v20"
-                ):
-                    license_document_uri = URIRef(obj.license)
-                    g.add(
-                        (
-                            license_document_uri,
-                            RDF.type,
-                            URIRef("http://purl.org/dc/terms/LicenseDocument"),
-                        )
-                    )
-                    g.add(
-                        (
-                            license_document_uri,
-                            DCT.type,
-                            URIRef("http://purl.org/adms/licencetype/Attribution"),
-                        )
-                    )
-                    g.add(
-                        (
-                            license_document_uri,
-                            FOAF.name,
-                            Literal(
-                                "Italian Open  Data License 2.0 (IODL 2.0)", lang="it"
-                            ),
-                        )
-                    )
-                    g.add((license_document_uri, OWL.versionInfo, Literal("4.0")))
-                else:
-                    license_document_uri = None
-                if license_document_uri:
-                    license_node = license_document_uri
+                license_node = self.get_license(g, obj.license)
+                if license_node:
                     g.add((distribution_uri, DCT.license, license_node))
-                    g.add(
-                        (license_node, DCATAPIT.LicenseDocument, license_document_uri)
-                    )
 
                 # XXX: per semplicità usiamo il rghtsHolder del dataset
                 g.add((distribution_uri, DCAT.contactPoint, holder_uri))
