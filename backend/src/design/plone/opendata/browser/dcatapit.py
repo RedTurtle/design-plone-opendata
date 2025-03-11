@@ -97,7 +97,7 @@ class RDFDownload(Download):
 
     def get_theme(self, g, theme):
         if theme in self._v_memoize_themes:
-            return self._v_memoize_licenses[theme]
+            return self._v_memoize_themes[theme]
         ref = URIRef(theme)
         for node in get_theme_triples(ref):
             g.add(node)
