@@ -35,7 +35,8 @@
   "dependencies": {
     "@plone/volto": "workspace:*",
     "@plone/registry": "workspace:*",
-    "volto-design-plone-opendata": "workspace:*"
+    "volto-design-plone-opendata": "workspace:*",
+    "design-comuni-plone-theme": "^11"
   },
   "devDependencies": {
     "mrs-developer": "^2.2.0"
