@@ -14,7 +14,7 @@ long_description = f"""
 
 setup(
     name="design.plone.opendata",
-    version="1.0.0a0",
+    version="1.0.0a1.dev0",
     description="Plone DCAT IT",
     long_description=long_description,
     long_description_content_type="text/markdown",
