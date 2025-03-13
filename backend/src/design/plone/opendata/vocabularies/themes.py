@@ -1,3 +1,5 @@
+# flake8: noqa: E501
+
 from . import dcatapit as resources
 from plone.memoize import forever
 from zope.interface import provider
@@ -37,5 +39,8 @@ def vocabulary_terms(lang):
 class DataThemesVocabulary:
     def __call__(self, context):
         lang = context.Language() or "it"
-        terms = [SimpleTerm(value=value, title=title) for (value, title) in vocabulary_terms(lang)]
+        terms = [
+            SimpleTerm(value=value, title=title)
+            for (value, title) in vocabulary_terms(lang)
+        ]
         return SimpleVocabulary(terms)

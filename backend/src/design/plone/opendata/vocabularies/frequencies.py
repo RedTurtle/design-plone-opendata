@@ -1,3 +1,5 @@
+# flake8: noqa: E501
+
 # from design.plone.opendata import _
 from zope.interface import provider
 from zope.schema.interfaces import IVocabularyFactory
