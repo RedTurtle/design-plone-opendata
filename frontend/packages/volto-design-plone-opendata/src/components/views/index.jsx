@@ -1,5 +1,3 @@
 import OpendataDatasetView from './OpendataDataset';
 
-export {
-    OpendataDatasetView
-}
+export { OpendataDatasetView };
