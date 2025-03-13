@@ -3,11 +3,8 @@
 from datetime import datetime
 from design.plone.opendata import logger
 from design.plone.opendata.controlpanel.opendata import IControlPanel
-from design.plone.opendata.vocabularies.licenses import get_license_ref
-from design.plone.opendata.vocabularies.licenses import (
-    get_triples as get_license_triples,
-)
-from design.plone.opendata.vocabularies.themes import get_triples as get_theme_triples
+from design.plone.opendata.vocabularies import licenses
+from design.plone.opendata.vocabularies import themes
 from plone import api
 from plone.namedfile.browser import Download
 from Products.Five import BrowserView
@@ -97,7 +94,7 @@ class RDFDownload(Download):
         if theme in self._v_memoize_themes:
             return self._v_memoize_themes[theme]
         ref = URIRef(theme)
-        for node in get_theme_triples(ref):
+        for node in themes.get_triples(ref):
             g.add(node)
         self._v_memoize_themes[theme] = ref
         return ref
@@ -105,9 +102,9 @@ class RDFDownload(Download):
     def get_license(self, g, license):
         if license in self._v_memoize_licenses:
             return self._v_memoize_licenses[license]
-        ref = get_license_ref(name=license)
+        ref = licenses.get_license_ref(name=license)
         if ref:
-            for node in get_license_triples(ref):
+            for node in licenses.get_triples(ref):
                 g.add(node)
         self._v_memoize_licenses[license] = ref
         return ref
