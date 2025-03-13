@@ -1,11 +1,11 @@
 # design.plone.opendata
 
-Plone DCAT IT
+Plone DCAT AP IT
 
 ## Features
 
-* [ ] add a behavior with custom fields to Dataset
-* [ ] add a RDF view to collect all dataset in DCAT-AP_IT
+* [x] add a a OpendataDataset content type
+* [x] add a RDF view to collect all dataset in DCAT-AP_IT
 
 ## Installation
 
