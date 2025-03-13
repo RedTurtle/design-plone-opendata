@@ -1,3 +1,4 @@
+# flake8: noqa: E501
 # from collective.volto.blocksfield.field import BlocksField
 # from design.plone.contenttypes.interfaces import IDesignPloneContentType
 from design.plone.opendata import _

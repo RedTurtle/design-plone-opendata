@@ -1,3 +1,5 @@
+# flake8: noqa: E501
+
 from datetime import datetime
 from design.plone.opendata import logger
 from design.plone.opendata.controlpanel.opendata import IControlPanel
