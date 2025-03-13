@@ -1,8 +1,4 @@
-# from design.plone.opendata import logger
 from pathlib import Path
-
-# from plone import api
-# from plone.exportimport import importers
 from Products.GenericSetup.tool import SetupTool
 
 

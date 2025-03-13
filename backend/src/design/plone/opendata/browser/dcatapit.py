@@ -7,8 +7,6 @@ from design.plone.opendata.vocabularies.licenses import get_license_ref
 from design.plone.opendata.vocabularies.licenses import (
     get_triples as get_license_triples,
 )
-
-# from zope.schema.interfaces import IVocabularyFactory
 from design.plone.opendata.vocabularies.themes import get_triples as get_theme_triples
 from plone import api
 from plone.namedfile.browser import Download
@@ -18,8 +16,6 @@ from rdflib import Graph
 from rdflib import Literal
 from rdflib import Namespace
 from rdflib import URIRef
-
-# from zope.component import getUtility
 from zope.interface import implementer
 from zope.interface import Interface
 from zope.publisher.interfaces import IPublishTraverse
